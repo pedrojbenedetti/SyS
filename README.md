@@ -39,7 +39,7 @@ La visualización permite:
 * observar el tren de deltas en el dominio temporal;
 * visualizar el tren de deltas resultante en el dominio frecuencial;
 * comprobar que la separación entre las deltas frecuenciales es $F_0=1/T_0$;
-* observar que el peso de cada delta en frecuencia también es 1/$T_0$;
+* observar que el peso de cada delta en frecuencia también es $1/T_0$;
 * comparar gráficamente la relación inversa entre las separaciones temporal y frecuencial.
 
 Las deltas se representan simbólicamente mediante flechas verticales. Su altura indica su peso y no el valor ordinario de una función.
