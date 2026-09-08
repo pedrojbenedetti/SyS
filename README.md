@@ -252,7 +252,7 @@ $$
 ## Trabajo práctico 1
 
 ### Ejercicio 1
-Archivo: [`frecuencias_fundamentales.py`](./frecuencias_fundamentales.py)
+Archivo: [`Clase TP1.ipynb`](./ClaseTP1.ipynb)
 
 #### Configuración de gráficos
 
