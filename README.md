@@ -4,6 +4,8 @@ Repositorio de scripts, visualizaciones y recursos interactivos para acompañar 
 
 El objetivo es facilitar la interpretación gráfica de los conceptos teóricos y complementar la resolución analítica de los ejercicios.
 
+Consultas: pbenedetti@itba.edu.ar
+
 ## Contenido
 
 ### Guía 3 — Ejercicio 2: convolución continua
