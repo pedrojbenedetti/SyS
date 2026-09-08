@@ -35,7 +35,7 @@ Su transformada de Fourier es:
 
 La visualización permite:
 
-* modificar el período temporal \{T_0\} mediante un control deslizante;
+* modificar el período temporal $T_0$ mediante un control deslizante;
 * observar el tren de deltas en el dominio temporal;
 * visualizar el tren de deltas resultante en el dominio frecuencial;
 * comprobar que la separación entre las deltas frecuenciales es \(F_0=1/T_0\);
