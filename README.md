@@ -7,6 +7,60 @@ El objetivo es facilitar la interpretación gráfica de los conceptos teóricos 
 Consultas: pbenedetti@itba.edu.ar
 
 ## Contenido
+
+### Producto de una senoide por un pulso unitario
+
+Archivo: [`subplots_seno_pulso_producto.py`](./subplots_seno_pulso_producto.py)
+
+El script representa gráficamente las señales:
+
+```math
+x(t)=\sin(2\pi t)
+```
+
+y un pulso rectangular unitario, de ancho 1 y centrado en $t=\frac{1}{2}$:
+
+```math
+p(t)=
+\begin{cases}
+1, & 0\leq t\leq 1,\\
+0, & \text{en otro caso}.
+\end{cases}
+```
+
+También muestra el producto entre ambas señales:
+
+```math
+y(t)=x(t)\,p(t)
+```
+
+Por lo tanto:
+
+```math
+y(t)=
+\begin{cases}
+\sin(2\pi t), & 0\leq t\leq 1,\\
+0, & \text{en otro caso}.
+\end{cases}
+```
+
+La visualización permite:
+
+* observar la señal senoidal original en color rojo;
+* identificar el intervalo de duración del pulso unitario en color azul;
+* visualizar el producto entre ambas señales en color violeta;
+* comprobar que el pulso actúa como una ventana temporal;
+* comparar las tres señales sobre un mismo eje temporal.
+
+Para ejecutar el script:
+
+```bash
+python subplots_seno_pulso_producto.py
+```
+
+El producto conserva la senoide únicamente dentro del intervalo $0\leq t\leq 1$ y la anula fuera de él.
+
+
 ### Guía 2 — Ejercicio 15: transformada de Fourier de un tren de deltas
 
 Archivo: [`tren_deltas_fourier_ideal.py`](./tren_deltas_fourier_ideal.py)
