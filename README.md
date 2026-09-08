@@ -252,7 +252,35 @@ $$
 ## Trabajo práctico 1
 
 ### Ejercicio 1
-Archivo: [`Clase TP1.ipynb`](./ClaseTP1.ipynb)
+Archivo: [`ClaseTP1.ipynb`](./ClaseTP1.ipynb)
+
+#### Creación de arreglos temporales
+Vemos el uso de las funciones np.linspace() y np.arange().
 
 #### Configuración de gráficos
+Vemos cómo podemos configurar los distintos parámetros de un plot de matplotlib, tales como:
+- Títulos
+- Colores
+- Grosor de líneas
+- Estilo de líneas
+- Etiquetas
+- Anotaciones
+- Superposición de gráficos
 
+### Ejercicio 2
+
+Vemos cómo cargar un archivo .mat almacenado de forma local.
+
+### Ejercicio 3
+
+Simulamos el muestreo de una señal usando la funcion plt.stem().
+
+### Ejercicio 4
+
+- Generamos 6 señales senoidales con distintas frecuencias y mostramos cómo hacer un subplot con plt.subplots().
+- Definimos un sistema pasaaltos de primer orden:
+  ```math
+H_(s)=1\text{ Hz},
+\qquad
+T_0=1\text{ s}.
+```
