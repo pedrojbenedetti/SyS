@@ -11,33 +11,35 @@ Consultas: pbenedetti@itba.edu.ar
 
 Archivo: [`tren_deltas_fourier_ideal.py`](./tren_deltas_fourier_ideal.py)
 
-El script representa el par de transformadas de Fourier del tren periódico de deltas:
+El script representa el par de transformadas de Fourier del tren periódico de deltas.
 
-$$
+En el dominio temporal:
+
+```math
 \widetilde{\delta}_{T_0}(t)
 =
 \sum_{k=-\infty}^{\infty}\delta(t-kT_0)
-$$
+```
 
-y
+Su transformada de Fourier es:
 
-$$
+```math
 \mathcal{F}\left\{
 \widetilde{\delta}_{T_0}(t)
 \right\}
 =
 \frac{1}{T_0}
 \sum_{n=-\infty}^{\infty}
-\delta\left(f-\frac{n}{T_0}\right).
-$$
+\delta\left(f-\frac{n}{T_0}\right)
+```
 
 La visualización permite:
 
-* modificar el período temporal $T_0$ mediante un control deslizante;
+* modificar el período temporal \(T_0\) mediante un control deslizante;
 * observar el tren de deltas en el dominio temporal;
 * visualizar el tren de deltas resultante en el dominio frecuencial;
-* comprobar que la separación entre las deltas frecuenciales es $F_0=1/T_0$;
-* observar que el peso de cada delta en frecuencia también es $1/T_0$;
+* comprobar que la separación entre las deltas frecuenciales es \(F_0=1/T_0\);
+* observar que el peso de cada delta en frecuencia también es \(1/T_0\);
 * comparar gráficamente la relación inversa entre las separaciones temporal y frecuencial.
 
 Las deltas se representan simbólicamente mediante flechas verticales. Su altura indica su peso y no el valor ordinario de una función.
@@ -50,20 +52,19 @@ python tren_deltas_fourier_ideal.py
 
 #### Controles
 
-* **Período temporal $T_0$:** modifica la separación entre las deltas temporales.
-* **Reiniciar:** vuelve a la configuración inicial, con $T_0=1$.
+* **Período temporal \(T_0\):** modifica la separación entre las deltas temporales.
+* **Reiniciar:** vuelve a la configuración inicial, con \(T_0=1\).
 
-La relación fundamental que muestra el programa es:
+La relación fundamental mostrada por el programa es:
 
-$$
-\boxed{
+```math
 \widetilde{\delta}_{T_0}(t)
 \longleftrightarrow
 \frac{1}{T_0}\widetilde{\delta}_{1/T_0}(f)
-}
-$$
+```
 
 Por lo tanto, al aumentar la separación entre las deltas en el tiempo, disminuye su separación en frecuencia, y viceversa.
+
 
 ### Guía 3 — Ejercicio 2: convolución continua
 
