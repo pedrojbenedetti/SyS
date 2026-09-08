@@ -6,18 +6,6 @@ El objetivo es facilitar la interpretación gráfica de los conceptos teóricos 
 
 Consultas: pbenedetti@itba.edu.ar
 
-## Índice
-
-<!-- TOC START -->
-- [Recursos complementarios](#recursos-complementarios)
-  - [Producto de una senoide por un pulso unitario](#producto-de-una-senoide-por-un-pulso-unitario)
-- [Guía 2](#guía-2)
-  - [Ejercicio 8 — Frecuencias fundamentales](#ejercicio-8-frecuencias-fundamentales)
-  - [Ejercicio 15 — Transformada de Fourier de un tren de deltas](#ejercicio-15-transformada-de-fourier-de-un-tren-de-deltas)
-- [Guía 3](#guía-3)
-  - [Ejercicio 2 — Convolución continua](#ejercicio-2-convolución-continua)
-<!-- TOC END -->
-
 ## Recursos complementarios
 
 ### Producto de una senoide por un pulso unitario
