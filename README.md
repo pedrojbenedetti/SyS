@@ -52,11 +52,6 @@ La visualización permite:
 * comprobar que el pulso actúa como una ventana temporal;
 * comparar las tres señales sobre un mismo eje temporal.
 
-Para ejecutar el script:
-
-```bash
-python subplots_seno_pulso_producto.py
-```
 
 El producto conserva la senoide únicamente dentro del intervalo $0\leq t\leq 1$ y la anula fuera de él.
 
