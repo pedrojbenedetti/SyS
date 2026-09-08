@@ -50,7 +50,7 @@ La visualización permite:
 * identificar el intervalo de duración del pulso unitario en color azul;
 * visualizar el producto entre ambas señales en color violeta;
 * comprobar que el pulso actúa como una ventana temporal;
-* comparar las tres señales sobre un mismo eje temporal.
+* comparar las tres señales en un mismo eje temporal.
 
 El producto conserva la senoide únicamente dentro del intervalo $0\leq t\leq 1$ y la anula fuera de él.
 
@@ -273,9 +273,13 @@ Vemos cómo cargar un archivo .mat almacenado de forma local.
 
 ### Ejercicio 3
 
-Simulamos el muestreo de una señal usando la funcion plt.stem().
+Simulamos el muestreo de una señal usando la función plt.stem().
 
 ### Ejercicio 4
 
 - Generamos 6 señales senoidales con distintas frecuencias y mostramos cómo hacer un subplot con plt.subplots().
-- Definimos un sistema pasaaltos de primer orden: $H(s)=\frac{s}{s+2}$.
+- Definimos un sistema pasaaltos de primer orden $H(s)=\frac{s}{s+2}$.
+- Generamos su función de transferencia usando sg.TransferFunction().
+- Generamos su diagrama de polos y ceros usando ct.pzmap(ct.tf(num,den)).
+- Aplicamos este filtro a las señales previamente generadas usando sg.lsim().
+- Graficamos su módulo y fase. Para ello generamos primero un eje horizontal con escala logarítmica para las frecuencias angulares. Calculamos su módulo en decibeles y su fase. 
