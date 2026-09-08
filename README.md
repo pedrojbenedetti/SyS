@@ -60,6 +60,100 @@ python subplots_seno_pulso_producto.py
 
 El producto conserva la senoide únicamente dentro del intervalo $0\leq t\leq 1$ y la anula fuera de él.
 
+### Guía 2 — Ejercicio 8: frecuencias fundamentales
+
+Archivo: [`frecuencias_fundamentales.py`](./frecuencias_fundamentales.py)
+
+El script representa las señales de los apartados **b**, **d** y **f** para facilitar el análisis de su periodicidad y la determinación de sus frecuencias fundamentales.
+
+#### Apartado b
+
+```math
+x(t)=3\sin\left(19\pi t-\frac{\pi}{3}\right)
++2\cos\left(10\pi t+\frac{\pi}{6}\right)
+```
+
+Las frecuencias de las componentes son:
+
+```math
+f_1=\frac{19}{2}\text{ Hz},
+\qquad
+f_2=5\text{ Hz}.
+```
+
+Como ambas son múltiplos enteros de $0{,}5\text{ Hz}$, la señal resultante tiene:
+
+```math
+f_0=0{,}5\text{ Hz},
+\qquad
+T_0=2\text{ s}.
+```
+
+La visualización muestra por separado el seno y el coseno. En el último gráfico se representa su suma, junto con las dos componentes mediante líneas punteadas.
+
+#### Apartado d
+
+```math
+x(t)=\frac{1}{2}
+\left[
+\cos\left(2t-\frac{\pi}{4}\right)
+\right]^2
+```
+
+Usando la identidad del coseno al cuadrado:
+
+```math
+x(t)=
+\frac{1}{4}
++
+\frac{1}{4}\cos\left(4t-\frac{\pi}{2}\right).
+```
+
+Por lo tanto, su período y su frecuencia angular fundamental son:
+
+```math
+T_0=\frac{\pi}{2}\text{ s},
+\qquad
+\omega_0=4\text{ rad/s}.
+```
+
+El programa compara el coseno original con la señal obtenida al elevarlo al cuadrado y multiplicarlo por $\frac{1}{2}$.
+
+#### Apartado f
+
+```math
+x(t)=
+\frac{\sin(5\pi t)}
+{\sin(\pi t)}.
+```
+
+Para los puntos en los que el denominador no se anula, el cociente puede escribirse como:
+
+```math
+x(t)=
+1+2\cos(2\pi t)+2\cos(4\pi t).
+```
+
+De esta expresión se obtiene:
+
+```math
+f_0=1\text{ Hz},
+\qquad
+T_0=1\text{ s}.
+```
+
+La visualización muestra el numerador, el denominador y el cociente. En el último gráfico también se superponen las dos señales originales mediante líneas punteadas.
+
+Los círculos abiertos indican los valores enteros de $t$, donde la expresión original produce la indeterminación $0/0$. En esos puntos la función no está definida, aunque su límite es igual a 5.
+
+El script permite:
+
+* comparar las componentes que forman cada señal;
+* visualizar sus repeticiones temporales;
+* relacionar los períodos individuales con el período fundamental;
+* observar cómo las operaciones de suma, potenciación y cociente modifican la periodicidad;
+* distinguir los puntos donde una expresión no está definida.
+
 
 ### Guía 2 — Ejercicio 15: transformada de Fourier de un tren de deltas
 
@@ -98,11 +192,6 @@ La visualización permite:
 
 Las deltas se representan simbólicamente mediante flechas verticales. Su altura indica su peso y no el valor ordinario de una función.
 
-Para ejecutar el script:
-
-```bash
-python tren_deltas_fourier_ideal.py
-```
 
 #### Controles
 
@@ -159,19 +248,6 @@ La herramienta permite:
 - NumPy
 - Matplotlib
 
-Las dependencias pueden instalarse con:
-
-```bash
-python -m pip install numpy matplotlib
-```
-
-## Ejecución
-
-Descargar o clonar el repositorio y ejecutar:
-
-```bash
-python convolucion_interactiva.py
-```
 
 ## Controles
 
