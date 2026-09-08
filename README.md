@@ -269,7 +269,9 @@ Vemos cómo podemos configurar los distintos parámetros de un plot de matplotli
 
 ### Ejercicio 2
 
-Vemos cómo cargar un archivo .mat almacenado de forma local.
+Vemos cómo cargar un archivo .mat (formato de tabla de Matlab) almacenado de forma local. En este caso usamos como ejemplo ECGPCG0001.mat, pero podría ser otro. En mi computadora el archivo se encuentra en la ruta "D:\SyS\TPs\ECGPCG0001.mat", pero deberían cambiarlo para poder ejecutarlo sin errores.
+
+
 
 ### Ejercicio 3
 
@@ -282,4 +284,6 @@ Simulamos el muestreo de una señal usando la función plt.stem().
 - Generamos su función de transferencia usando sg.TransferFunction().
 - Generamos su diagrama de polos y ceros usando ct.pzmap(ct.tf(num,den)).
 - Aplicamos este filtro a las señales previamente generadas usando sg.lsim().
-- Graficamos su módulo y fase. Para ello generamos primero un eje horizontal con escala logarítmica para las frecuencias angulares. Calculamos su módulo en decibeles y su fase. 
+- Graficamos su módulo y fase. Para ello generamos primero un eje horizontal con escala logarítmica para las frecuencias angulares. Calculamos su módulo en decibeles y su fase.
+
+Para poder visualizarlo correctamente, en la misma carpeta del script deben tener los archivos colorpython.png y linestyles.png.
