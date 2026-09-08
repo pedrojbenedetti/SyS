@@ -16,7 +16,6 @@ Consultas: pbenedetti@itba.edu.ar
   - [Ejercicio 15 — Transformada de Fourier de un tren de deltas](#ejercicio-15-transformada-de-fourier-de-un-tren-de-deltas)
 - [Guía 3](#guía-3)
   - [Ejercicio 2 — Convolución continua](#ejercicio-2-convolución-continua)
-- [Requisitos](#requisitos)
 <!-- TOC END -->
 
 ## Recursos complementarios
@@ -262,8 +261,3 @@ $$
 x(t)*g(t)=g(t)*x(t).
 $$
 
-## Requisitos
-
-- Python 3.10 o posterior
-- NumPy
-- Matplotlib
