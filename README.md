@@ -249,3 +249,10 @@ $$
 x(t)*g(t)=g(t)*x(t).
 $$
 
+## Trabajo práctico 1
+
+### Ejercicio 1
+Archivo: [`frecuencias_fundamentales.py`](./frecuencias_fundamentales.py)
+
+#### Configuración de gráficos
+
