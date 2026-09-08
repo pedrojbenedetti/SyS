@@ -6,7 +6,20 @@ El objetivo es facilitar la interpretación gráfica de los conceptos teóricos 
 
 Consultas: pbenedetti@itba.edu.ar
 
-## Contenido
+## Índice
+
+<!-- TOC START -->
+- [Recursos complementarios](#recursos-complementarios)
+  - [Producto de una senoide por un pulso unitario](#producto-de-una-senoide-por-un-pulso-unitario)
+- [Guía 2](#guía-2)
+  - [Ejercicio 8 — Frecuencias fundamentales](#ejercicio-8--frecuencias-fundamentales)
+  - [Ejercicio 15 — Transformada de Fourier de un tren de deltas](#ejercicio-15--transformada-de-fourier-de-un-tren-de-deltas)
+- [Guía 3](#guía-3)
+  - [Ejercicio 2 — Convolución continua](#ejercicio-2--convolución-continua)
+- [Requisitos](#requisitos)
+<!-- TOC END -->
+
+## Recursos complementarios
 
 ### Producto de una senoide por un pulso unitario
 
@@ -52,10 +65,11 @@ La visualización permite:
 * comprobar que el pulso actúa como una ventana temporal;
 * comparar las tres señales sobre un mismo eje temporal.
 
-
 El producto conserva la senoide únicamente dentro del intervalo $0\leq t\leq 1$ y la anula fuera de él.
 
-### Guía 2 — Ejercicio 8: frecuencias fundamentales
+## Guía 2
+
+### Ejercicio 8 — Frecuencias fundamentales
 
 Archivo: [`frecuencias_fundamentales.py`](./frecuencias_fundamentales.py)
 
@@ -149,8 +163,7 @@ El script permite:
 * observar cómo las operaciones de suma, potenciación y cociente modifican la periodicidad;
 * distinguir los puntos donde una expresión no está definida.
 
-
-### Guía 2 — Ejercicio 15: transformada de Fourier de un tren de deltas
+### Ejercicio 15 — Transformada de Fourier de un tren de deltas
 
 Archivo: [`tren_deltas_fourier_ideal.py`](./tren_deltas_fourier_ideal.py)
 
@@ -187,11 +200,10 @@ La visualización permite:
 
 Las deltas se representan simbólicamente mediante flechas verticales. Su altura indica su peso y no el valor ordinario de una función.
 
-
 #### Controles
 
 * **Período temporal $T_0$:** modifica la separación entre las deltas temporales.
-* **Reiniciar:** vuelve a la configuración inicial, con $T_0$=1.
+* **Reiniciar:** vuelve a la configuración inicial, con $T_0=1$.
 
 La relación fundamental mostrada por el programa es:
 
@@ -203,8 +215,9 @@ La relación fundamental mostrada por el programa es:
 
 Por lo tanto, al aumentar la separación entre las deltas en el tiempo, disminuye su separación en frecuencia, y viceversa.
 
+## Guía 3
 
-### Guía 3 — Ejercicio 2: convolución continua
+### Ejercicio 2 — Convolución continua
 
 Archivo: [`convolucion_interactiva.py`](./convolucion_interactiva.py)
 
@@ -237,17 +250,10 @@ La herramienta permite:
 - identificar los límites efectivos de integración;
 - relacionar cada posición con el valor de la convolución $y(t)$.
 
-## Requisitos
-
-- Python 3.10 o posterior
-- NumPy
-- Matplotlib
-
-
-## Controles
+#### Controles
 
 - **Valor de $t$:** desplaza la señal seleccionada.
-- **Mover $g$ / Mover $x$:** permite elegir cuál de las señales se invierte y desplaza.
+- **Mover $g$ / Mover $x$:** permite elegir cuál de las dos señales se invierte y desplaza.
 - **Reiniciar:** vuelve a la configuración inicial.
 
 La conmutatividad de la convolución garantiza que ambas formas de representación producen el mismo resultado:
@@ -255,3 +261,9 @@ La conmutatividad de la convolución garantiza que ambas formas de representaci�
 $$
 x(t)*g(t)=g(t)*x(t).
 $$
+
+## Requisitos
+
+- Python 3.10 o posterior
+- NumPy
+- Matplotlib
