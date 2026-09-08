@@ -38,7 +38,7 @@ La visualización permite:
 * modificar el período temporal $T_0$ mediante un control deslizante;
 * observar el tren de deltas en el dominio temporal;
 * visualizar el tren de deltas resultante en el dominio frecuencial;
-* comprobar que la separación entre las deltas frecuenciales es $F_0$=1/$T_0$;
+* comprobar que la separación entre las deltas frecuenciales es $F_0=1/T_0$;
 * observar que el peso de cada delta en frecuencia también es 1/$T_0$;
 * comparar gráficamente la relación inversa entre las separaciones temporal y frecuencial.
 
