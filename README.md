@@ -61,7 +61,7 @@ Archivo: [`frecuencias_fundamentales.py`](./frecuencias_fundamentales.py)
 
 El script representa las señales de los apartados **b**, **d** y **f** para facilitar el análisis de su periodicidad y la determinación de sus frecuencias fundamentales.
 
-#### Apartado b
+#### b)
 
 ```math
 x(t)=3\sin\left(19\pi t-\frac{\pi}{3}\right)
@@ -86,7 +86,7 @@ T_0=2\text{ s}.
 
 La visualización muestra por separado el seno y el coseno. En el último gráfico se representa su suma, junto con las dos componentes mediante líneas punteadas.
 
-#### Apartado d
+#### d)
 
 ```math
 x(t)=\frac{1}{2}
@@ -114,7 +114,7 @@ T_0=\frac{\pi}{2}\text{ s},
 
 El programa compara el coseno original con la señal obtenida al elevarlo al cuadrado y multiplicarlo por $\frac{1}{2}$.
 
-#### Apartado f
+#### f)
 
 ```math
 x(t)=
