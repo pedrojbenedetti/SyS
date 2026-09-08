@@ -278,9 +278,4 @@ Simulamos el muestreo de una señal usando la funcion plt.stem().
 ### Ejercicio 4
 
 - Generamos 6 señales senoidales con distintas frecuencias y mostramos cómo hacer un subplot con plt.subplots().
-- Definimos un sistema pasaaltos de primer orden:
-  ```math
-H_(s)=1\text{ Hz},
-\qquad
-T_0=1\text{ s}.
-```
+- Definimos un sistema pasaaltos de primer orden: $ H_{(s)} = \frac{s}{s+2}$
