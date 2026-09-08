@@ -1,6 +1,6 @@
 # Señales y Sistemas
 
-Repositorio de scripts, visualizaciones y recursos interactivos para acompañar las guías de ejercicios de la materia **Señales y Sistemas**.
+Repositorio de scripts, visualizaciones y recursos interactivos para acompañar las guías de ejercicios de la materia **16.68 - Señales y Sistemas**.
 
 El objetivo es facilitar la interpretación gráfica de los conceptos teóricos y complementar la resolución analítica de los ejercicios.
 
