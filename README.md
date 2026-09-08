@@ -12,10 +12,10 @@ Consultas: pbenedetti@itba.edu.ar
 - [Recursos complementarios](#recursos-complementarios)
   - [Producto de una senoide por un pulso unitario](#producto-de-una-senoide-por-un-pulso-unitario)
 - [Guía 2](#guía-2)
-  - [Ejercicio 8 — Frecuencias fundamentales](#ejercicio-8--frecuencias-fundamentales)
-  - [Ejercicio 15 — Transformada de Fourier de un tren de deltas](#ejercicio-15--transformada-de-fourier-de-un-tren-de-deltas)
+  - [Ejercicio 8 — Frecuencias fundamentales](#ejercicio-8-frecuencias-fundamentales)
+  - [Ejercicio 15 — Transformada de Fourier de un tren de deltas](#ejercicio-15-transformada-de-fourier-de-un-tren-de-deltas)
 - [Guía 3](#guía-3)
-  - [Ejercicio 2 — Convolución continua](#ejercicio-2--convolución-continua)
+  - [Ejercicio 2 — Convolución continua](#ejercicio-2-convolución-continua)
 - [Requisitos](#requisitos)
 <!-- TOC END -->
 
