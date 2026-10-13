@@ -249,6 +249,105 @@ $$
 x(t)*g(t)=g(t)*x(t).
 $$
 
+## Primer parcial — 2.º cuatrimestre de 2026
+
+### Ejercicio 1a — Diagrama de Bode interactivo
+
+Archivo: [`bode_ejercicio_1a.py`](./bode_ejercicio_1a.py)
+
+El script representa el módulo y la fase del filtro pasabanda utilizado en el acondicionamiento de un electromiógrafo:
+
+```math
+H(s)=\frac{s}{s+\omega_1}\,
+\frac{\omega_2^2}{s^2+2\xi\omega_2s+\omega_2^2},
+\qquad
+\omega_1=2\pi\cdot10\text{ rad/s},\quad
+\omega_2=2\pi\cdot500\text{ rad/s},\quad
+\xi=0{,}4.
+```
+
+La visualización tiene dos paneles con un eje común de frecuencia en Hz y escala logarítmica:
+
+- **Módulo:** superpone la respuesta exacta en dB y su aproximación asintótica, indicando las pendientes de cada tramo.
+- **Fase:** muestra el argumento de la respuesta en frecuencia, expresado en grados.
+
+El módulo asintótico se construye sumando las contribuciones en decibeles del pasaaltos de primer orden y del pasabajos de segundo orden:
+
+```math
+20\log_{10}|H(i2\pi f)|\approx
+\begin{cases}
+20\log_{10}(f/10), & 0<f<10,\\
+0, & 10\leq f\leq500,\\
+-40\log_{10}(f/500), & f>500.
+\end{cases}
+```
+
+Las pendientes son **+20 dB/década**, **0 dB/década** y **−40 dB/década**, respectivamente.
+
+#### Controles
+
+- **Frecuencia [Hz]:** permite ingresar una frecuencia entre 0,1 y 10 000 Hz. Al presionar **Enter**, se actualizan las líneas verticales y los puntos de ambos paneles.
+- **Etiqueta de módulo:** informa el valor exacto en dB, la ganancia lineal y el valor asintótico.
+- **Etiqueta de fase:** informa el ángulo en grados y radianes.
+
+El cuadro admite punto o coma decimal y comienza en 120 Hz. Los valores se calculan directamente a partir de la transferencia, sin aproximarlos al punto más cercano de la grilla. Permite explorar también las componentes de 120 y 2000 Hz del inciso 1b.
+
+### Ejercicio 3b — Convolución con una exponencial y una delta retrasada
+
+Archivo: [`convolucion_ejercicio_3b_gui.py`](./convolucion_ejercicio_3b_gui.py)
+
+La GUI representa la salida de un sistema LTI cuya respuesta impulsiva es:
+
+```math
+h(t)=e^{-3t}u(t)+2\delta(t-1),
+```
+
+ante el pulso rectangular:
+
+```math
+x(t)=\Pi\left(\frac{t-2}{4}\right)=u(t)-u(t-4).
+```
+
+El pulso tiene altura 1, centro en 2 s y ancho de 4 s. Por linealidad, la convolución se separa en dos contribuciones:
+
+```math
+y(t)=(x*h)(t)=y_e(t)+y_\delta(t),
+\qquad
+y_\delta(t)=2x(t-1).
+```
+
+La parte exponencial es:
+
+```math
+y_e(t)=
+\begin{cases}
+0, & t<0,\\
+\dfrac{1-e^{-3t}}{3}, & 0\leq t<4,\\
+\dfrac{1-e^{-12}}{3}e^{-3(t-4)}, & t\geq4.
+\end{cases}
+```
+
+La contribución de la delta es una copia de la entrada, retrasada 1 s y multiplicada por 2. La salida total presenta saltos de +2 en $t=1$ y de −2 en $t=5$; en $t=4$ es continua y comienza a decaer la parte exponencial.
+
+La visualización tiene dos paneles:
+
+- **Superposición:** muestra una señal fija y la otra invertida y desplazada, el área del producto de las partes regulares y la delta como una flecha simbólica de peso 2.
+- **Resultado:** compara la contribución exponencial, la contribución de la delta y la suma total; un cursor indica el instante seleccionado.
+
+El texto lateral muestra los soportes, los límites efectivos de integración y el valor de cada contribución. La delta se evalúa mediante su propiedad de selección, sin aproximarla por un pico numérico.
+
+#### Controles
+
+- **Tiempo $t$:** deslizador entre −1 y 7 s, con pasos de 0,01 s.
+- **Cuadro $t$ [s]:** permite ingresar un instante y confirmar con **Enter**, usando punto o coma decimal.
+- **Mover $h$ / Mover $x$:** permite elegir qué señal se invierte y desplaza. Ambas opciones producen la misma salida por conmutatividad.
+- **Animar / Pausar:** recorre automáticamente el intervalo temporal o detiene el recorrido.
+- **Reiniciar:** detiene la animación y vuelve a $t=-1$ s.
+
+La GUI adopta $\Pi(\pm1/2)=1/2$, equivalente a $u(0)=1/2$. Por eso, exactamente en $t=1$ y $t=5$, la contribución de la delta vale 1. Se distinguen esos valores puntuales de los límites laterales mediante marcadores.
+
+Ambos scripts utilizan **NumPy** y **Matplotlib**.
+
 ## Trabajo práctico 1
 
 ### Ejercicio 1
@@ -287,3 +386,4 @@ Simulamos el muestreo de una señal usando la función plt.stem().
 - Graficamos su módulo y fase. Para ello generamos primero un eje horizontal con escala logarítmica para las frecuencias angulares. Calculamos su módulo en decibeles y su fase.
 
 Para poder visualizarlo correctamente, en la misma carpeta del script deben tener los archivos colorpython.png y linestyles.png.
+
