@@ -231,7 +231,7 @@ $$
 La herramienta permite:
 
 - desplazar una de las señales mediante un control deslizante;
-- elegir cuál de las dos señales se mantiene fija;
+- elegir cuál de las dos señales se mantiene fija (la que se evalúa en $\tau$);
 - observar la inversión y el desplazamiento respecto de la variable $\tau$;
 - visualizar la zona de superposición;
 - identificar los límites efectivos de integración;
