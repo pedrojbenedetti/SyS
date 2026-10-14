@@ -249,6 +249,71 @@ $$
 x(t)*g(t)=g(t)*x(t).
 $$
 
+## Guía 6
+
+### Ejercicios 11, 12 y 13 — DTFT, DFT y agregado de ceros
+
+Archivo: [`DFT_interactiva_ceros.py`](./DFT_interactiva_ceros.py)
+
+La GUI representa la señal $x[n]=3\delta[n]+2\delta[n-1]+3\delta[n-2]$ y permite agregar ceros al final para comparar su DTFT con la DFT de $N$ puntos.
+
+```math
+X(f)=e^{-j2\pi f}\left[2+6\cos(2\pi f)\right],
+\qquad X_N[k]=X\left(\frac{k}{N}\right),
+\qquad N=3+\text{cantidad de ceros},\quad \Delta f=\frac{1}{N}.
+```
+
+La frecuencia se expresa en ciclos por muestra. Agregar ceros mantiene la DTFT y aumenta la densidad de muestras de la DFT, sin agregar información ni mejorar la resolución determinada por la duración del registro original.
+
+- **Panel izquierdo:** módulo y fase de la DTFT superpuestos con las muestras de la DFT.
+- **Panel derecho:** señal temporal, con valores originales y ceros agregados diferenciados por color.
+- **Información:** valores de $N$ y $\Delta f$. Los ejes de frecuencia y módulo permanecen fijos.
+
+#### Controles
+
+- **Ceros agregados:** cuadro editable con flechas para aumentar o disminuir la cantidad; comienza en 0.
+- **Clic en el espectro:** selecciona la muestra DFT más cercana, marca su frecuencia en ambos paneles y muestra $k$, $f_k$, módulo y fase.
+
+El script utiliza **NumPy**, **Matplotlib** y **Tkinter**.
+
+### Ejercicio 28 — Ecuación en diferencias, retardos y sumadores
+
+Archivo: [`ecuacion_diferencias_interactiva.py`](./ecuacion_diferencias_interactiva.py)
+
+La GUI representa el sistema:
+
+```math
+y[n+2]-5y[n+1]+6y[n]=3x[n+1]+5x[n].
+```
+
+Para calcular la salida en cada instante se utiliza:
+
+```math
+y[n]=3x[n-1]+5x[n-2]+5y[n-1]-6y[n-2].
+```
+
+Los retardos $z^{-1}$ se ordenan de arriba hacia abajo. Las ramas directas tienen $b_0=0$, $b_1=3$ y $b_2=5$; la realimentación usa $-a_1=5$ y $-a_2=-6$, con $1/a_0=1$.
+
+La visualización permite:
+
+- identificar las señales retrasadas y los valores guardados en cada memoria;
+- distinguir los valores de $x$ en azul y los de $y$ en naranja, con los coeficientes del mismo color;
+- seguir los valores sin ponderar en marcadores circulares amarillos centrados en el último tramo que entra a cada sumador;
+- observar en negro el resultado de cada sumador, con los coeficientes aplicados;
+- consultar el historial de entradas, memorias y salidas en una tabla.
+
+#### Controles
+
+- **Entrada manual:** permite ingresar $x[n]$. Al presionar **Enter** o **Ingresar y avanzar**, calcula la salida y avanza el reloj. El cuadro comienza en 1 y vuelve a 1 después de cada avance manual; la entrada pendiente del diagrama se indica con «?».
+- **Entrada automática:** usa $x[n]=(0.5)^n u[n]$ en cada paso confirmado.
+- **Volver atrás:** restaura las memorias y la entrada del paso anterior para modificarlo y repetirlo.
+- **Condiciones iniciales:** permite elegir condiciones nulas o las del inciso b: $y[-1]=11/6$ y $y[-2]=37/36$. Se toma $x[n]=0$ para $n<0$.
+- **Reiniciar con estas condiciones:** borra el historial y vuelve a $n=0$ usando la opción seleccionada.
+
+El diagrama muestra las memorias del próximo instante y mantiene debajo el último cálculo. Como $b_0=0$, es posible conocer $y[n]$ antes de ingresar $x[n]$: la entrada actual comienza a afectar la salida en el instante siguiente.
+
+Los sumadores y marcadores conservan su forma circular al redimensionar la ventana. El script utiliza **Tkinter**.
+
 ## Primer parcial — 2.º cuatrimestre de 2026
 
 ### Ejercicio 1a — Diagrama de Bode interactivo
@@ -386,4 +451,5 @@ Simulamos el muestreo de una señal usando la función plt.stem().
 - Graficamos su módulo y fase. Para ello generamos primero un eje horizontal con escala logarítmica para las frecuencias angulares. Calculamos su módulo en decibeles y su fase.
 
 Para poder visualizarlo correctamente, en la misma carpeta del script deben tener los archivos colorpython.png y linestyles.png.
+
 
