@@ -1,6 +1,6 @@
 # Señales y Sistemas
 
-Repositorio de scripts, visualizaciones y recursos interactivos para acompañar las guías de ejercicios de la materia **16.68 - Señales y Sistemas** del **ITBA**.
+Repositorio de scripts y recursos interactivos para acompañar las guías de ejercicios de la materia **16.68 - Señales y Sistemas** del **ITBA**.
 
 El objetivo es facilitar la interpretación gráfica de los conceptos teóricos y complementar la resolución analítica de los ejercicios.
 
@@ -52,7 +52,7 @@ La visualización permite:
 * comprobar que el pulso actúa como una ventana temporal;
 * comparar las tres señales en un mismo eje temporal.
 
-El producto conserva la senoide únicamente dentro del intervalo $0\leq t\leq 1$ y la anula fuera de él.
+El producto conserva la senoide únicamente en el intervalo $0\leq t\leq 1$ y la anula fuera de él.
 
 ## Guía 2
 
