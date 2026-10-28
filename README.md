@@ -6,6 +6,14 @@ El objetivo es facilitar la interpretación gráfica de los conceptos teóricos 
 
 Consultas: pbenedetti@itba.edu.ar
 
+## Simuladores web
+
+[Abrir el menú de simuladores](https://pedrojbenedetti.github.io/SyS/)
+
+- [Explorador de polos y ceros](https://pedrojbenedetti.github.io/SyS/H_z_Interactiva.html): ubicación de raíces y respuesta en frecuencia.
+- [Realización de sistemas](https://pedrojbenedetti.github.io/SyS/realizacion_sistemas.html): formas directas I y II y simulación muestra a muestra.
+- [Explorador FIR por ventanas](https://pedrojbenedetti.github.io/SyS/explorador_FIR_ventanas.html): diseño de un pasabajos con ventanas Rectangular, Hanning, Hamming y Blackman; ceros, módulo y fase.
+
 ## Recursos complementarios
 
 ### Producto de una senoide por un pulso unitario
