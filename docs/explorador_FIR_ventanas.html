@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorador FIR por ventanas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141b24;
+    --ink-soft:#56636f;
+    --chrome:#eef1f4;
+    --card:#ffffff;
+    --screen:#0d1318;
+    --grid:#1d2730;
+    --grid-soft:#161e26;
+    --line:#d7dde3;
+    --on:#ff4d57;     /* cero sobre el círculo */
+    --in:#4d9bff;     /* cero dentro */
+    --out:#2ec27e;    /* cero fuera */
+    --pole:#e8edf2;   /* polos en el origen */
+    --pt:#ffab38;     /* e^jΩ */
+    --mag:#27e0cf;    /* trazo magnitud */
+    --phase:#b58cff;  /* trazo fase */
+    --ref:#3a4856;    /* curva de referencia */
+    --cut:#ff7a5c;    /* Ωc */
+    --band:rgba(255,171,56,.09); /* banda de transición */
+    --stem:#27e0cf;
+    --win:#ffab38;
+    --accent:#1466ff;
+    --err:#c4313b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    font-family:'Space Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    color:var(--ink); background:var(--chrome);
+    -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; min-height:100vh;
+  }
+  main{min-height:520px;
+  }
+  .mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
+
+  /* ---------- header ---------- */
+  header{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 20px;
+    padding:16px clamp(14px,3vw,30px) 14px;
+    border-bottom:1px solid var(--line); background:var(--card);
+  }
+  header h1{font-size:clamp(17px,2.4vw,23px); font-weight:700; letter-spacing:-.02em; margin:0; line-height:1.05;}
+  header h1 .em{color:var(--accent);}
+  .specs{display:flex; flex-wrap:wrap; gap:6px 8px; margin-left:auto; align-items:center;}
+  .chip{font-size:12px; padding:4px 9px; border-radius:999px; background:var(--chrome);
+    border:1px solid var(--line); color:var(--ink-soft); white-space:nowrap;}
+  .chip b{color:var(--ink); font-weight:600;}
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px;}
+
+  /* ---------- parámetros ---------- */
+  .params{
+    background:var(--card); border-bottom:1px solid var(--line);
+    padding:12px clamp(14px,3vw,30px);
+    display:flex; flex-wrap:wrap; gap:12px 18px; align-items:flex-end;
+  }
+  .field{display:flex; flex-direction:column; gap:5px;}
+  .field label{font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .inp{display:flex; align-items:center; border:1px solid var(--line); border-radius:8px; background:var(--chrome); overflow:hidden;}
+  .inp:focus-within{border-color:var(--accent); box-shadow:0 0 0 2px rgba(20,102,255,.15);}
+  .inp.bad{border-color:var(--err);}
+  .inp input{width:90px; border:0; background:transparent; padding:8px 4px 8px 10px; font:500 14px 'IBM Plex Mono',ui-monospace,monospace; color:var(--ink); outline:none;}
+  .inp span{padding:0 10px 0 2px; font-size:12px; color:var(--ink-soft);}
+  select{font:600 13px 'Space Grotesk',system-ui,sans-serif; color:var(--ink); background:var(--chrome);
+    border:1px solid var(--line); border-radius:8px; padding:8px 10px; cursor:pointer;}
+  select:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+  .derived{margin-left:auto;}
+  .msg{flex-basis:100%; font-size:12.5px; color:var(--err); margin:0; min-height:0;}
+  .msg:empty{display:none;}
+
+  /* ---------- layout principal ---------- */
+  main{
+    flex:1; display:grid; gap:14px; padding:14px clamp(14px,3vw,30px);
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+    grid-template-rows:minmax(250px,1fr) minmax(250px,1fr);
+    grid-template-areas:"zplane mag" "zplane phase";
+  }
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:10px 12px 8px; display:flex; flex-direction:column; min-height:0; min-width:0;}
+  #card-z{grid-area:zplane;} #card-mag{grid-area:mag;} #card-phase{grid-area:phase;}
+  .card-head{display:flex; align-items:center; gap:8px; margin:0 2px 6px; flex-wrap:wrap;}
+  .card-head h2{font-size:13px; font-weight:600; letter-spacing:.01em; margin:0; text-transform:uppercase;}
+  .card-head .sub{font-size:11.5px; color:var(--ink-soft);}
+  .legend{display:flex; gap:12px; margin-left:auto; flex-wrap:wrap;}
+  .legend span{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:5px;}
+  .legend i{width:9px;height:9px;border-radius:50%; display:inline-block;}
+  .legend i.x{border-radius:0; background:none; position:relative;}
+  .legend i.x::before,.legend i.x::after{content:""; position:absolute; left:4px; top:-1px; width:1.6px; height:11px; background:var(--ink-soft); transform:rotate(45deg);}
+  .legend i.x::after{transform:rotate(-45deg);}
+  .canvas-wrap{position:relative; flex:1; min-height:0; border-radius:8px; overflow:hidden; background:var(--screen);}
+  canvas{display:block; width:100%; height:100%; position:absolute; inset:0;}
+
+  /* ---------- barra de control ---------- */
+  .controls{background:var(--card); border-top:1px solid var(--line);
+    padding:12px clamp(14px,3vw,30px) 16px; display:flex; flex-wrap:wrap; gap:16px 24px; align-items:center;}
+  .slider-group{flex:1 1 320px; min-width:240px;}
+  .slider-group label{font-size:12px; color:var(--ink-soft); display:flex; justify-content:space-between; margin-bottom:5px;}
+  .slider-group label b{color:var(--ink);}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px;
+    background:linear-gradient(90deg,var(--accent) 0%,var(--accent) var(--fill,0%),var(--line) var(--fill,0%)); cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--pt);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--pt);border:3px solid #fff;cursor:pointer;}
+  input[type=range]:focus-visible{outline:2px solid var(--accent); outline-offset:4px;}
+
+  .btns{display:flex; gap:8px;}
+  button{font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; padding:9px 16px; border-radius:8px;
+    border:1px solid var(--line); background:var(--chrome); color:var(--ink); transition:transform .05s, background .15s, border-color .15s;}
+  button:hover{border-color:#b9c2cc;}
+  button:active{transform:translateY(1px);}
+  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  button.primary{background:var(--accent); color:#fff; border-color:var(--accent);}
+  button.primary:hover{background:#0f55d8;}
+
+  .speed{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft);}
+  .speed input{width:110px;}
+  .toggles{display:flex; flex-wrap:wrap; gap:6px 14px;}
+  .tg{font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none;}
+  .tg input{accent-color:var(--accent); width:15px; height:15px; cursor:pointer;}
+
+  .readout{display:flex; flex-wrap:wrap; border:1px solid var(--line); border-radius:9px; overflow:hidden;}
+  .ro{padding:7px 13px; border-right:1px solid var(--line); min-width:86px;}
+  .ro:last-child{border-right:none;}
+  .ro .k{font-size:10.5px; color:var(--ink-soft); letter-spacing:.04em; text-transform:uppercase; font-family:'IBM Plex Mono',monospace;}
+  .ro .v{font-size:15px; font-weight:600; font-variant-numeric:tabular-nums;}
+  .derived .ro .v{font-size:14px;}
+
+  .seg{display:inline-flex; margin-left:auto; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--chrome);}
+  .seg button{border:0; border-radius:0; padding:5px 12px; font-size:12px; background:transparent; color:var(--ink-soft);}
+  .seg button+button{border-left:1px solid var(--line);}
+  .seg button[aria-pressed="true"]{background:var(--accent); color:#fff;}
+  .seg button:hover{border-color:inherit;}
+  .hint{font-size:11.5px; color:var(--ink-soft); line-height:1.55; padding:0 clamp(14px,3vw,30px) 14px; margin:0; max-width:120ch;}
+
+  @media (max-width:880px){
+    main{grid-template-columns:1fr; grid-template-rows:auto auto auto;
+      grid-template-areas:"zplane" "mag" "phase";}
+    #card-z .canvas-wrap{aspect-ratio:1/1; flex:none;}
+    #card-mag .canvas-wrap,#card-phase .canvas-wrap{height:200px; flex:none;}
+    .specs,.derived{margin-left:0;}
+  }
+  @media (prefers-reduced-motion:reduce){button{transition:none;}}
+  .home-link{display:inline-flex;align-items:center;align-self:center;text-decoration:none;white-space:nowrap;font-size:13px;font-weight:600;padding:9px 14px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--chrome);}
+  .home-link:hover{border-color:#b9c2cc;background:#e4edf8;}
+  .home-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+</style>
+</head>
+<body>
+<header>
+  <a class="home-link" href="./index.html" aria-label="Volver al menú de simuladores">← Inicio</a>
+  <div>
+    <h1>Filtro FIR por <span class="em">ventanas</span> — pasa bajos</h1>
+  </div>
+  <div class="specs">
+    <span class="chip">L&nbsp;=&nbsp;<b id="sp-L">—</b></span>
+    <span class="chip">D&nbsp;=&nbsp;<b id="sp-D">—</b>&nbsp;muestras</span>
+    <span class="chip">Ventana&nbsp;<b id="sp-win">—</b></span>
+    <span class="chip"><i class="dot" style="background:var(--on)"></i><b id="sp-on">0</b> sobre</span>
+    <span class="chip"><i class="dot" style="background:var(--in)"></i><b id="sp-in">0</b> dentro</span>
+    <span class="chip"><i class="dot" style="background:var(--out)"></i><b id="sp-out">0</b> fuera</span>
+    <span class="chip">× <b id="sp-poles">0</b> polos en z = 0</span>
+  </div>
+</header>
+
+<section class="params" aria-label="Parámetros del filtro">
+  <div class="field">
+    <label for="in-fs">Frec. de muestreo F<sub>s</sub></label>
+    <div class="inp" id="box-fs"><input type="number" id="in-fs" value="256" min="1" step="any"><span>Hz</span></div>
+  </div>
+  <div class="field">
+    <label for="in-fp">Frec. de paso f<sub>p</sub></label>
+    <div class="inp" id="box-fp"><input type="number" id="in-fp" value="30" min="0" step="any"><span>Hz</span></div>
+  </div>
+  <div class="field">
+    <label for="in-fst">Frec. de stop f<sub>stop</sub></label>
+    <div class="inp" id="box-fst"><input type="number" id="in-fst" value="40" min="0" step="any"><span>Hz</span></div>
+  </div>
+  <div class="field">
+    <label for="in-win">Ventana</label>
+    <select id="in-win">
+      <option value="Rec">Rectangular</option>
+      <option value="Han">Hanning</option>
+      <option value="Ham" selected>Hamming</option>
+      <option value="Bla">Blackman</option>
+    </select>
+  </div>
+  <div class="readout mono derived">
+    <div class="ro"><div class="k">Ω<sub>p</sub></div><div class="v" id="d-op">—</div></div>
+    <div class="ro"><div class="k">Ω<sub>stop</sub></div><div class="v" id="d-os">—</div></div>
+    <div class="ro"><div class="k">ΔΩ</div><div class="v" id="d-dO">—</div></div>
+    <div class="ro"><div class="k">Ω<sub>c</sub></div><div class="v" id="d-oc">—</div></div>
+    <div class="ro"><div class="k">Aten. típ.</div><div class="v" id="d-att">—</div></div>
+  </div>
+  <p class="msg" id="msg" role="status"></p>
+</section>
+
+<main>
+  <section class="card" id="card-z">
+    <div class="card-head">
+      <h2>Plano z</h2><span class="sub">ceros de H(z), polos en el origen y punto e<sup>jΩ</sup></span>
+      <div class="legend">
+        <span><i style="background:var(--on)"></i>sobre círculo</span>
+        <span><i style="background:var(--in)"></i>dentro</span>
+        <span><i style="background:var(--out)"></i>fuera</span>
+        <span><i class="x"></i>polos</span>
+        <span><i style="background:var(--pt)"></i>e<sup>jΩ</sup></span>
+      </div>
+    </div>
+    <div class="canvas-wrap"><canvas id="cz"></canvas></div>
+  </section>
+
+  <section class="card" id="card-mag">
+    <div class="card-head">
+      <h2>Magnitud |H|</h2><span class="sub" id="mag-sub">en veces (lineal)</span>
+      <div class="seg" role="group" aria-label="Unidad de la magnitud">
+        <button type="button" id="u-lin" aria-pressed="true">Veces</button>
+        <button type="button" id="u-db" aria-pressed="false">dB</button>
+      </div>
+    </div>
+    <div class="canvas-wrap"><canvas id="cm"></canvas></div>
+  </section>
+
+  <section class="card" id="card-phase">
+    <div class="card-head">
+      <h2>Fase ∠H</h2><span class="sub" id="phase-sub">envuelta en (−π, π]</span>
+    </div>
+    <div class="canvas-wrap"><canvas id="cp"></canvas></div>
+  </section>
+
+</main>
+
+<div class="controls">
+  <div class="slider-group">
+    <label for="slider">Frecuencia normalizada Ω <b id="lbl-omega" class="mono">0.000 rad</b></label>
+    <input type="range" id="slider" min="0" max="3.14159265" step="0.0001" value="0">
+  </div>
+  <div class="btns">
+    <button class="primary" id="btn-play">▶ Reproducir</button>
+    <button id="btn-reset">⟲ Reiniciar</button>
+  </div>
+  <div class="speed">
+    <label for="speed">Velocidad</label>
+    <input type="range" id="speed" min="0.2" max="3" step="0.1" value="1">
+  </div>
+  <div class="toggles">
+    <label class="tg"><input type="checkbox" id="t-unwrap"> desenvolver fase</label>
+    <label class="tg"><input type="checkbox" id="t-vec"> vectores a los ceros</label>
+    <label class="tg"><input type="checkbox" id="t-hz"> eje en Hz</label>
+  </div>
+  <div class="readout mono">
+    <div class="ro"><div class="k">f</div><div class="v" id="ro-hz">0 Hz</div></div>
+    <div class="ro"><div class="k">|H|</div><div class="v" id="ro-mag">—</div></div>
+    <div class="ro"><div class="k">|H| dB</div><div class="v" id="ro-db">—</div></div>
+    <div class="ro"><div class="k">∠H</div><div class="v" id="ro-ph">—</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== Cálculo (sin DOM) ===================== -->
+<script id="fir-math">
+const PI = Math.PI;
+
+/* Ventanas: k de la longitud (L = k·π/ΔΩ + 1) y atenuación típica de banda de rechazo */
+const WIN = {
+  Rec:{name:'Rectangular', k:1.84,  att:21, w:(n,L)=>1},
+  Han:{name:'Hanning',     k:6.22,  att:44, w:(n,L)=>0.5*(1-Math.cos(2*PI*n/(L-1)))},
+  Ham:{name:'Hamming',     k:6.64,  att:53, w:(n,L)=>0.54-0.46*Math.cos(2*PI*n/(L-1))},
+  Bla:{name:'Blackman',    k:11.13, att:74, w:(n,L)=>0.42-0.5*Math.cos(2*PI*n/(L-1))+0.08*Math.cos(4*PI*n/(L-1))}
+};
+const LMAX = 401;
+
+function sinc(x){ if(Math.abs(x)<1e-12) return 1; const a=PI*x; return Math.sin(a)/a; }
+
+/* Equivalente a fir1.m (filtro pasa bajos, F_central = 0).
+   Para pasa banda / pasa altos se multiplicará h[n] por 2cos(Ω0·n). */
+function designFIR(p){
+  const Op = 2*PI*p.Fp/p.Fs, Os = 2*PI*p.Fst/p.Fs;
+  const dO = Os-Op, Oc = (Op+Os)/2;
+  const W = WIN[p.win];
+  let L = Math.ceil(W.k*PI/dO + 1);
+  L = L | 1;                               // bitset(L,1,1): fuerza L impar
+  if(L > LMAX) return {error:`La longitud resultante (L = ${L}) supera el máximo de ${LMAX}. Ensanchá la banda de transición.`};
+  const D = (L-1)/2;
+  const h = new Float64Array(L), w = new Float64Array(L);
+  for(let n=0;n<L;n++){
+    w[n] = W.w(n,L);
+    h[n] = (Oc/PI)*sinc((Oc/PI)*(n-D))*w[n];
+  }
+  return {Op,Os,dO,Oc,L,D,h,w,win:W};
+}
+
+/* ---- aritmética compleja mínima ---- */
+function cdiv(ar,ai,br,bi){const d=br*br+bi*bi; return [(ar*br+ai*bi)/d,(ai*br-ar*bi)/d];}
+
+/* p(z)/p'(z) para p(z)=Σ a[k] z^(n-k); si |z|>1 se usa el polinomio recíproco para evitar desbordes */
+function newtonRatio(a,zr,zi){
+  const n=a.length-1;
+  if(zr*zr+zi*zi<=1){
+    let pr=a[0],pi=0,dr=0,di=0;
+    for(let k=1;k<=n;k++){
+      const ndr=dr*zr-di*zi+pr, ndi=dr*zi+di*zr+pi; dr=ndr; di=ndi;
+      const npr=pr*zr-pi*zi+a[k], npi=pr*zi+pi*zr; pr=npr; pi=npi;
+    }
+    return cdiv(pr,pi,dr,di);
+  }
+  const [ur,ui]=cdiv(1,0,zr,zi);
+  let qr=a[n],qi=0,dr=0,di=0;
+  for(let k=n-1;k>=0;k--){
+    const ndr=dr*ur-di*ui+qr, ndi=dr*ui+di*ur+qi; dr=ndr; di=ndi;
+    const nqr=qr*ur-qi*ui+a[k], nqi=qr*ui+qi*ur; qr=nqr; qi=nqi;
+  }
+  // p/p' = z·q / (n·q − u·q')
+  const numr=zr*qr-zi*qi, numi=zr*qi+zi*qr;
+  const denr=n*qr-(ur*dr-ui*di), deni=n*qi-(ur*di+ui*dr);
+  return cdiv(numr,numi,denr,deni);
+}
+
+/* Raíces por Aberth–Ehrlich */
+function polyRoots(c){
+  const n=c.length-1; if(n<1) return [];
+  const a=Array.from(c,v=>v/c[0]);
+  const R=Math.pow(Math.abs(a[n]),1/n)||1;
+  const zr=new Float64Array(n), zi=new Float64Array(n);
+  for(let k=0;k<n;k++){const t=2*PI*k/n+0.4; zr[k]=R*Math.cos(t); zi[k]=R*Math.sin(t);}
+  for(let it=0;it<600;it++){
+    let md=0;
+    for(let i=0;i<n;i++){
+      const [rr,ri]=newtonRatio(a,zr[i],zi[i]);
+      let sr=0,si=0;
+      for(let j=0;j<n;j++){ if(j===i) continue;
+        const dr=zr[i]-zr[j], di=zi[i]-zi[j], d=dr*dr+di*di;
+        sr+=dr/d; si-=di/d; }
+      // w = r / (1 − r·s)
+      const br=1-(rr*sr-ri*si), bi=-(rr*si+ri*sr);
+      const [wr,wi]=cdiv(rr,ri,br,bi);
+      if(!isFinite(wr)||!isFinite(wi)) continue;
+      zr[i]-=wr; zi[i]-=wi;
+      md=Math.max(md,Math.hypot(wr,wi)/Math.max(1,Math.hypot(zr[i],zi[i])));
+    }
+    if(md<1e-14) break;
+  }
+  const out=[]; for(let k=0;k<n;k++) out.push({re:zr[k],im:Math.abs(zi[k])<1e-10?0:zi[k]});
+  return out;
+}
+
+/* Ceros y polos de H(z) = Σ h[n] z^-n = z^-b · Σ_{n=a}^{b} h[n] z^(b-n) */
+function zerosPoles(h){
+  const mx=Math.max(...Array.from(h,Math.abs)), tol=1e-13*mx;
+  let a=0, b=h.length-1;
+  while(a<b && Math.abs(h[a])<=tol) a++;
+  while(b>a && Math.abs(h[b])<=tol) b--;
+  const zeros=polyRoots(Array.from(h.slice(a,b+1)));
+  const cls=zeros.map(z=>{const m=Math.hypot(z.re,z.im); return Math.abs(m-1)<1e-2?'on':(m<1?'in':'out');});
+  return {zeros,cls,nPoles:b,gain:h[a]};
+}
+
+function freqResp(h,w){
+  let re=0,im=0;
+  for(let n=0;n<h.length;n++){re+=h[n]*Math.cos(w*n); im-=h[n]*Math.sin(w*n);}
+  return {re,im,mag:Math.hypot(re,im),phase:Math.atan2(im,re)};
+}
+
+function unwrapArr(src){
+  const o=new Float64Array(src.length); o[0]=src[0];
+  for(let i=1;i<src.length;i++){let d=src[i]-src[i-1]; while(d>PI)d-=2*PI; while(d<-PI)d+=2*PI; o[i]=o[i-1]+d;}
+  return o;
+}
+</script>
+
+<!-- ===================== Interfaz ===================== -->
+<script>
+const $=id=>document.getElementById(id);
+const N=1200;
+const refW=new Float64Array(N); for(let i=0;i<N;i++) refW[i]=PI*i/(N-1);
+
+const S={omega:0, playing:false, raf:0, speed:1, unwrap:false, db:false, vec:false, hz:false};
+let F=null;   // filtro actual + datos derivados
+
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function fit(canvas){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const r=canvas.parentElement.getBoundingClientRect();
+  canvas.width=Math.max(1,Math.round(r.width*dpr));
+  canvas.height=Math.max(1,Math.round(r.height*dpr));
+  const g=canvas.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+  return {g,w:r.width,h:r.height};
+}
+
+/* ===================== Recalcular el filtro ===================== */
+function readParams(){
+  const Fs=parseFloat($('in-fs').value), Fp=parseFloat($('in-fp').value), Fst=parseFloat($('in-fst').value);
+  const bad={fs:false,fp:false,fst:false}; let msg='';
+  if(!(Fs>0)){bad.fs=true; msg='La frecuencia de muestreo debe ser positiva.';}
+  else if(!(Fp>0)){bad.fp=true; msg='La frecuencia de paso debe ser mayor que 0 Hz.';}
+  else if(!(Fst>Fp)){bad.fst=true; msg='La frecuencia de stop debe ser mayor que la de paso.';}
+  else if(Fst>Fs/2){bad.fst=true; msg=`La frecuencia de stop no puede superar Fs/2 = ${+(Fs/2).toFixed(3)} Hz (Nyquist).`;}
+  $('box-fs').classList.toggle('bad',bad.fs); $('box-fp').classList.toggle('bad',bad.fp); $('box-fst').classList.toggle('bad',bad.fst);
+  return msg?{error:msg}:{Fs,Fp,Fst,win:$('in-win').value};
+}
+
+function recompute(){
+  const p=readParams();
+  if(p.error){$('msg').textContent=p.error+' Se muestra el último filtro válido.'; return;}
+  const d=designFIR(p);
+  if(d.error){$('msg').textContent=d.error+' Se muestra el último filtro válido.'; return;}
+  $('msg').textContent='';
+  const zp=zerosPoles(d.h);
+  const refMag=new Float64Array(N), refPh=new Float64Array(N);
+  let magMax=0;
+  for(let i=0;i<N;i++){const H=freqResp(d.h,refW[i]); refMag[i]=H.mag; refPh[i]=H.phase; if(H.mag>magMax) magMax=H.mag;}
+  const refPhU=unwrapArr(refPh);
+  let phUMin=Infinity, phUMax=-Infinity;
+  for(let i=0;i<N;i++){phUMin=Math.min(phUMin,refPhU[i]); phUMax=Math.max(phUMax,refPhU[i]);}
+  F={...d, ...zp, Fs:p.Fs, refMag, refPh, refPhU, magMax, phUMin, phUMax,
+     zMax:Math.max(1,...zp.zeros.map(z=>Math.hypot(z.re,z.im)))};
+  // cabecera y parámetros derivados
+  $('sp-L').textContent=d.L; $('sp-D').textContent=d.D; $('sp-win').textContent=d.win.name;
+  $('sp-on').textContent=zp.cls.filter(c=>c==='on').length;
+  $('sp-in').textContent=zp.cls.filter(c=>c==='in').length;
+  $('sp-out').textContent=zp.cls.filter(c=>c==='out').length;
+  $('sp-poles').textContent=zp.nPoles;
+  $('d-op').textContent=d.Op.toFixed(4); $('d-os').textContent=d.Os.toFixed(4);
+  $('d-dO').textContent=d.dO.toFixed(4); $('d-oc').textContent=d.Oc.toFixed(4);
+  $('d-att').textContent='≈ '+d.win.att+' dB';
+  render();
+}
+
+/* ===================== Plano z ===================== */
+function drawZ(){
+  const {g,w,h:H}=fit($('cz'));
+  g.clearRect(0,0,w,H);
+  const pad=14;
+  if(Math.min(w,H)<2*pad+20) return;
+  // Caja que contiene el círculo unidad y todos los ceros; se escala (misma escala en x e y)
+  // para ocupar el mayor área posible del lienzo, centrada en esa caja.
+  let x0=-1,x1=1,y0=-1,y1=1;
+  F.zeros.forEach(z=>{x0=Math.min(x0,z.re); x1=Math.max(x1,z.re); y0=Math.min(y0,z.im); y1=Math.max(y1,z.im);});
+  const mg=0.06*Math.max(x1-x0,y1-y0);
+  x0-=mg; x1+=mg; y0-=mg; y1+=mg;
+  const k=Math.min((w-2*pad)/(x1-x0),(H-2*pad)/(y1-y0));
+  const mx=(x0+x1)/2, my=(y0+y1)/2;
+  const sx=v=>w/2+(v-mx)*k, sy=v=>H/2-(v-my)*k, r1=k;
+  const cx0=sx(0), cy0=sy(0);
+  // ejes (a todo el lienzo)
+  g.strokeStyle=css('--grid'); g.lineWidth=1;
+  g.beginPath(); g.moveTo(0,cy0); g.lineTo(w,cy0); g.moveTo(cx0,0); g.lineTo(cx0,H); g.stroke();
+  // marcas ±1 y ±lim
+  g.fillStyle='#69788a'; g.font="10.5px 'IBM Plex Mono',monospace"; g.textAlign='center'; g.textBaseline='top';
+  [-1,1].forEach(v=>g.fillText(v>0?'1':'−1',sx(v),sy(0)+4));
+  // círculo unidad
+  g.strokeStyle='#46586a'; g.lineWidth=1.6;
+  g.beginPath(); g.arc(cx0,cy0,r1,0,2*PI); g.stroke();
+  // rayos Ωp, Ωstop (banda de transición)
+  g.fillStyle=css('--band');
+  g.beginPath(); g.moveTo(cx0,cy0); g.arc(cx0,cy0,r1,-F.Op,-F.Os,true); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(cx0,cy0); g.arc(cx0,cy0,r1,F.Op,F.Os,false); g.closePath(); g.fill();
+  // arco recorrido 0..Ω
+  g.strokeStyle=css('--pt'); g.lineWidth=3; g.globalAlpha=.85;
+  g.beginPath(); g.arc(cx0,cy0,r1,0,-S.omega,true); g.stroke(); g.globalAlpha=1;
+  const P={re:Math.cos(S.omega),im:Math.sin(S.omega)};
+  // vectores
+  if(S.vec){
+    g.lineWidth=1; g.globalAlpha=.5;
+    F.zeros.forEach((z,i)=>{ g.strokeStyle=css('--'+F.cls[i]);
+      g.beginPath(); g.moveTo(sx(P.re),sy(P.im)); g.lineTo(sx(z.re),sy(z.im)); g.stroke(); });
+    g.globalAlpha=1;
+  }
+  // polos en el origen
+  const s=7; g.strokeStyle=css('--pole'); g.lineWidth=2;
+  g.beginPath(); g.moveTo(sx(0)-s,sy(0)-s); g.lineTo(sx(0)+s,sy(0)+s); g.moveTo(sx(0)+s,sy(0)-s); g.lineTo(sx(0)-s,sy(0)+s); g.stroke();
+  g.fillStyle=css('--pole'); g.font="600 11px 'IBM Plex Mono',monospace"; g.textAlign='left'; g.textBaseline='bottom';
+  g.fillText('('+F.nPoles+')',sx(0)+s+3,sy(0)-s+2);
+  // ceros
+  const rad=F.zeros.length>40?4.5:6;
+  F.zeros.forEach((z,i)=>{ g.fillStyle=css('--'+F.cls[i]); g.beginPath(); g.arc(sx(z.re),sy(z.im),rad,0,2*PI); g.fill(); });
+  // punto e^{jΩ}
+  g.fillStyle=css('--pt'); g.strokeStyle='#0d1318'; g.lineWidth=2;
+  g.beginPath(); g.arc(sx(P.re),sy(P.im),8,0,2*PI); g.fill(); g.stroke();
+}
+
+/* ===================== Ejes de magnitud y fase ===================== */
+function axes(g,w,H,ymin,ymax,yticks,yfmt){
+  const m={l:48,r:12,t:10,b:24};
+  const PW=w-m.l-m.r, PH=H-m.t-m.b;
+  const X=v=>m.l+(v/PI)*PW;
+  const Y=v=>m.t+(1-(v-ymin)/(ymax-ymin))*PH;
+  // banda de transición
+  g.fillStyle=css('--band'); g.fillRect(X(F.Op),m.t,X(F.Os)-X(F.Op),PH);
+  // rejilla X
+  g.strokeStyle=css('--grid-soft'); g.lineWidth=1;
+  g.fillStyle='#69788a'; g.font="11px 'IBM Plex Mono',monospace"; g.textAlign='center'; g.textBaseline='top';
+  const lab=S.hz
+    ? [0,1,2,3,4].map(k=>[k*PI/4, +(k*F.Fs/8).toFixed(1)+(k===4?' Hz':'')])
+    : [[0,'0'],[PI/4,'π/4'],[PI/2,'π/2'],[3*PI/4,'3π/4'],[PI,'π']];
+  lab.forEach(([v,t],k)=>{const x=X(v); g.beginPath(); g.moveTo(x,m.t); g.lineTo(x,m.t+PH); g.stroke();
+    g.textAlign=k===0?'left':(k===4?'right':'center'); g.fillText(t,x,m.t+PH+5);});
+  // rejilla Y
+  g.textAlign='right'; g.textBaseline='middle';
+  yticks.forEach(v=>{const y=Y(v); g.strokeStyle=css('--grid-soft'); g.beginPath(); g.moveTo(m.l,y); g.lineTo(m.l+PW,y); g.stroke(); g.fillText(yfmt(v),m.l-6,y);});
+  // Ωc
+  const xc=X(F.Oc);
+  g.strokeStyle=css('--cut'); g.setLineDash([4,4]); g.lineWidth=1.3;
+  g.beginPath(); g.moveTo(xc,m.t); g.lineTo(xc,m.t+PH); g.stroke(); g.setLineDash([]);
+  g.fillStyle=css('--cut'); g.textAlign='left'; g.textBaseline='top';
+  g.fillText('Ωc',xc+4,m.t+2);
+  return {X,Y,PW,PH,m};
+}
+
+function curve(g,X,Y,vals,count,color,width,breakJumps){
+  g.strokeStyle=color; g.lineWidth=width; g.lineJoin='round'; g.beginPath();
+  let started=false;
+  for(let i=0;i<count;i++){
+    const x=X(refW[i]), y=Y(vals[i]);
+    if(breakJumps && i>0 && Math.abs(vals[i]-vals[i-1])>PI) started=false;
+    if(!started){g.moveTo(x,y); started=true;} else g.lineTo(x,y);
+  }
+  g.stroke();
+}
+function idxOf(w){return Math.min(N-1,Math.max(0,Math.floor(w/PI*(N-1))));}
+
+/* ===================== Magnitud ===================== */
+function drawMag(){
+  const {g,w,h:H}=fit($('cm')); g.clearRect(0,0,w,H);
+  const dBmin=-20*Math.ceil((F.win.att+30)/20);
+  const ymax=S.db?10:Math.max(1.1,F.magMax*1.05), ymin=S.db?dBmin:0;
+  const yticks=S.db?Array.from({length:-dBmin/20+1},(_,k)=>-20*k):[0,0.25,0.5,0.75,1.0];
+  const yfmt=v=>S.db?v.toFixed(0):v.toFixed(2);
+  const A=axes(g,w,H,ymin,ymax,yticks,yfmt);
+  const toY=m=>S.db?Math.max(dBmin,20*Math.log10(Math.max(m,1e-12))):m;
+  const ref=new Float64Array(N); for(let i=0;i<N;i++) ref[i]=toY(F.refMag[i]);
+  // atenuación típica de la ventana en la banda de rechazo
+  if(S.db){
+    const y=A.Y(-F.win.att);
+    g.strokeStyle=css('--cut'); g.globalAlpha=.6; g.setLineDash([2,4]); g.lineWidth=1.2;
+    g.beginPath(); g.moveTo(A.X(F.Os),y); g.lineTo(A.X(PI),y); g.stroke(); g.setLineDash([]); g.globalAlpha=1;
+    g.fillStyle=css('--cut'); g.textAlign='right'; g.textBaseline='bottom'; g.font="10.5px 'IBM Plex Mono',monospace";
+    g.fillText('−'+F.win.att+' dB',A.X(PI)-4,y-3);
+  }
+  curve(g,A.X,A.Y,ref,N,css('--ref'),1.6,false);
+  const k=idxOf(S.omega)+1;
+  curve(g,A.X,A.Y,ref,k,css('--mag'),2.6,false);
+  const endY=toY(freqResp(F.h,S.omega).mag);
+  g.strokeStyle=css('--mag'); g.lineWidth=2.6; g.beginPath();
+  g.moveTo(A.X(refW[k-1]),A.Y(ref[k-1])); g.lineTo(A.X(S.omega),A.Y(endY)); g.stroke();
+  g.fillStyle=css('--pt'); g.beginPath(); g.arc(A.X(S.omega),A.Y(endY),5,0,2*PI); g.fill();
+}
+
+/* ===================== Fase ===================== */
+function drawPhase(){
+  const {g,w,h:H}=fit($('cp')); g.clearRect(0,0,w,H);
+  let ymin,ymax,yticks,yfmt,src,endVal;
+  if(S.unwrap){
+    const pad=(F.phUMax-F.phUMin)*0.08||1;
+    ymin=F.phUMin-pad; ymax=F.phUMax+pad;
+    const step=(ymax-ymin)/4;
+    yticks=[0,1,2,3,4].map(i=>ymin+i*step);
+    yfmt=v=>v.toFixed(1);
+    src=F.refPhU;
+    const fi=S.omega/PI*(N-1), i0=Math.min(N-1,Math.floor(fi)), i1=Math.min(N-1,i0+1), t=fi-i0;
+    endVal=src[i0]*(1-t)+src[i1]*t;
+  }else{
+    ymin=-PI; ymax=PI;
+    yticks=[PI,PI/2,0,-PI/2,-PI];
+    yfmt=v=>{const a=Math.abs(v); if(a<1e-6)return'0'; const s=v<0?'−':''; if(Math.abs(a-PI)<1e-3)return s+'π'; return s+'π/2';};
+    src=F.refPh; endVal=freqResp(F.h,S.omega).phase;
+  }
+  const A=axes(g,w,H,ymin,ymax,yticks,yfmt);
+  const br=!S.unwrap;
+  curve(g,A.X,A.Y,src,N,css('--ref'),1.6,br);
+  const k=idxOf(S.omega)+1;
+  curve(g,A.X,A.Y,src,k,css('--phase'),2.6,br);
+  if(!br || Math.abs(endVal-src[k-1])<PI){
+    g.strokeStyle=css('--phase'); g.lineWidth=2.6; g.beginPath();
+    g.moveTo(A.X(refW[k-1]),A.Y(src[k-1])); g.lineTo(A.X(S.omega),A.Y(endVal)); g.stroke();
+  }
+  g.fillStyle=css('--pt'); g.beginPath(); g.arc(A.X(S.omega),A.Y(endVal),5,0,2*PI); g.fill();
+}
+
+/* ===================== Lecturas ===================== */
+function updateReadout(){
+  const H=freqResp(F.h,S.omega);
+  const f=(S.omega/PI)*(F.Fs/2);
+  const dB=20*Math.log10(Math.max(H.mag,1e-12));
+  $('lbl-omega').textContent=S.omega.toFixed(3)+' rad';
+  $('ro-hz').textContent=(f<100?f.toFixed(1):f.toFixed(0))+' Hz';
+  $('ro-mag').textContent=H.mag.toFixed(4);
+  $('ro-db').textContent=dB.toFixed(1)+' dB';
+  $('ro-ph').textContent=(H.phase*180/PI).toFixed(1)+'°';
+  $('slider').style.setProperty('--fill',(S.omega/PI*100).toFixed(2)+'%');
+  $('slider').value=S.omega;
+}
+
+function render(){ if(!F) return; drawZ(); drawMag(); drawPhase(); updateReadout(); }
+function renderSweep(){ if(!F) return; drawZ(); drawMag(); drawPhase(); updateReadout(); }
+
+/* ===================== Animación ===================== */
+let last=0;
+function loop(ts){
+  if(!S.playing) return;
+  if(!last) last=ts;
+  const dt=(ts-last)/1000; last=ts;
+  S.omega+=dt*S.speed*(PI/6);           // ~6 s a velocidad 1
+  if(S.omega>=PI){S.omega=PI; renderSweep(); stop(); return;}
+  renderSweep();
+  S.raf=requestAnimationFrame(loop);
+}
+function play(){ if(S.omega>=PI) S.omega=0; S.playing=true; last=0; $('btn-play').innerHTML='⏸ Pausar'; S.raf=requestAnimationFrame(loop); }
+function stop(){ S.playing=false; cancelAnimationFrame(S.raf); $('btn-play').innerHTML='▶ Reproducir'; }
+function reset(){ stop(); S.omega=0; renderSweep(); }
+
+/* ===================== Eventos ===================== */
+let tmr=0;
+['in-fs','in-fp','in-fst'].forEach(id=>$(id).addEventListener('input',()=>{clearTimeout(tmr); tmr=setTimeout(recompute,180);}));
+$('in-win').addEventListener('change',recompute);
+$('slider').addEventListener('input',e=>{stop(); S.omega=parseFloat(e.target.value); renderSweep();});
+$('btn-play').addEventListener('click',()=>S.playing?stop():play());
+$('btn-reset').addEventListener('click',reset);
+$('speed').addEventListener('input',e=>{S.speed=parseFloat(e.target.value);});
+$('t-unwrap').addEventListener('change',e=>{S.unwrap=e.target.checked; $('phase-sub').textContent=S.unwrap?'desenvuelta (unwrap)':'envuelta en (−π, π]'; render();});
+function setUnit(db){S.db=db; $('u-lin').setAttribute('aria-pressed',String(!db)); $('u-db').setAttribute('aria-pressed',String(db));
+  $('mag-sub').textContent=db?'en decibeles (dB)':'en veces (lineal)'; render();}
+$('u-lin').addEventListener('click',()=>setUnit(false));
+$('u-db').addEventListener('click',()=>setUnit(true));
+$('t-vec').addEventListener('change',e=>{S.vec=e.target.checked; render();});
+$('t-hz').addEventListener('change',e=>{S.hz=e.target.checked; render();});
+window.addEventListener('resize',render);
+window.addEventListener('keydown',e=>{
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'&&e.target.type!=='range'&&e.target.type!=='checkbox' || tag==='select') return;
+  if(e.key===' '){e.preventDefault(); S.playing?stop():play();}
+  else if(e.key==='ArrowRight'){e.preventDefault(); stop(); S.omega=Math.min(PI,S.omega+PI/200); renderSweep();}
+  else if(e.key==='ArrowLeft'){e.preventDefault(); stop(); S.omega=Math.max(0,S.omega-PI/200); renderSweep();}
+  else if(e.key.toLowerCase()==='r'){reset();}
+});
+
+recompute();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+</script>
+</body>
+</html>
